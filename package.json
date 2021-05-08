@@ -1,0 +1,34 @@
+{
+	"name": "dopmam-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.js",
+	"engines": {
+		"node": ">=12",
+		"npm": ">=5"
+	},
+	"scripts": {
+		"dev": "nodemon src/index.js",
+		"start": "nodemon src/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/elnemerahmed/dopmam-api.git"
+	},
+	"author": "Ahmed El Nemer",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/elnemerahmed/dopmam-api/issues"
+	},
+	"homepage": "https://github.com/elnemerahmed/dopmam-api#readme",
+	"dependencies": {
+		"chalks": "^0.1.5",
+		"express": "^4.17.1",
+		"fabric-ca-client": "^2.2.4",
+		"fabric-network": "^2.2.4",
+		"jsonwebtoken": "^8.5.1"
+	},
+	"devDependencies": {
+		"dotenv": "^9.0.0"
+	}
+}
