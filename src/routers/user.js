@@ -42,7 +42,7 @@ router.post( '/user/login', ( req, res ) => {
 
 router.post( '/user/refresh', ( req, res ) => {
     try {
-        const { ettoken: refreshToken } = req.body;
+        const { token: refreshToken } = req.body;
         let tokens = loadTokens();
         if ( !tokens.includes( refreshToken ) ) {
             return res.status( 400 ).send();
@@ -53,6 +53,7 @@ router.post( '/user/refresh', ( req, res ) => {
             }
 
             delete user.iat;
+            delete user.exp;
             const token = generateToken( user );
             res.status( 201 ).send( { token } );
         } );

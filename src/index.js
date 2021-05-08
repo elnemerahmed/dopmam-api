@@ -11,9 +11,9 @@ const port = process.env.PORT || 3000;
 
 app.use( express.json() );
 app.use( userRouter );
-app.use( hospitalRouter );
-app.use( dopmamRouter );
+//app.use( hospitalRouter );
+//app.use( dopmamRouter );
 
 app.listen( port, () => {
     console.log( `Server started at: http://localhost:${ port }` );
-} ); a
+} );
