@@ -21,7 +21,7 @@ module.exports.query = async ( name, organization, queryObject ) => {
         }
     };
     await gateway.connect( connectionProfile, connectionOptions );
-    channels.forEach( ( channel ) => {
+    channels.forEach( async ( channel ) => {
         const network = await gateway.getNetwork( channel );
         const contract = network.getContract( process.env.CHAINCODE );
         result[ channel ] = [];
