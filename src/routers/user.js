@@ -66,8 +66,8 @@ router.post( '/user/refresh', ( req, res ) => {
 
 router.post( '/user/register', async ( req, res ) => {
     try {
-        const { name, organization } = req.body;
-        await register(name, organization);
+        const { name, organization, department } = req.body;
+        await register(name, organization, department);
 
         res.status( 200 ).send();
     } catch ( error ) {

@@ -28,7 +28,7 @@ const enrollAdmin = async ( caClient, wallet, organization, admin, password ) =>
     }
 };
 
-const registerAndEnrollUser = async ( caClient, wallet, organization, user, admin, password ) => {
+const registerAndEnrollUser = async ( caClient, wallet, organization, user, department, admin ) => {
     try {
         const userIdentity = await wallet.get( user );
         if ( userIdentity ) {
@@ -45,6 +45,7 @@ const registerAndEnrollUser = async ( caClient, wallet, organization, user, admi
         const MSP = `${ organization.charAt( 0 ).toUpperCase() }${ organization.slice( 1 ) }MSP`;
 
         const secret = await caClient.register( {
+            affiliation: `${organization}.${department}`,
             enrollmentID: user,
             role: 'client'
         }, adminUser );
@@ -77,13 +78,13 @@ const buildCAClient = ( FabricCAServices, connectionProfile, organization ) => {
     return caClient;
 };
 
-module.exports.register = async (name, organization) => {
+module.exports.register = async (name, organization, department) => {
     const connectionProfile = buildConnectionProfile( organization );
     const caClient = buildCAClient( FabricCAServices, connectionProfile, organization );
     const wallet = await buildWallet( Wallets, organization );
 
     await enrollAdmin( caClient, wallet, organization, 'admin', 'adminpw' );
-    await registerAndEnrollUser( caClient, wallet, organization, name, 'admin', );
+    await registerAndEnrollUser( caClient, wallet, organization, name, department, 'admin', );
 };
 
 module.exports.userExists = async (name, organization) => {
