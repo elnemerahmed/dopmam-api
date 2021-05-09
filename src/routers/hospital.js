@@ -1,7 +1,6 @@
 const express = require( 'express' );
 
 const authentication = require( '../middleware/authentication' );
-const { staff } = require( '../middleware/authorization' );
 const { query } = require( './../fabric/ledger' );
 
 const router = new express.Router();
@@ -30,11 +29,11 @@ router.get( '/:hospital/reports/:id', authentication, async ( req, res ) => {
     }
 } );
 
-router.post( '/:hospital/sign/:id', authentication, staff, async ( req, res ) => {
+// router.post( '/:hospital/sign/:id', authentication, staff, async ( req, res ) => {
 
-} );
+// } );
 
-router.post( '/:hospital/patients/:id', authentication, staff, async ( req, res ) => {
+router.post( '/:hospital/patients/:id', authentication, async ( req, res ) => {
     try {
         const { hospital, id } = req.params;
         const { name, organization } = req.user;

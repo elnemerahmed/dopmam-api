@@ -1,7 +1,6 @@
 const express = require( 'express' );
 
 const authentication = require( '../middleware/authentication' );
-const { staff } = require( '../middleware/authorization' );
 const { query } = require( '../fabric/ledger' );
 
 const router = new express.Router();
@@ -30,7 +29,7 @@ router.get( '/dopmam/reports/:id', authentication, ( req, res ) => {
     }
 } );
 
-router.post( '/dopmam/sign/:id', authentication, staff, ( req, res ) => {
+router.post( '/dopmam/sign/:id', authentication, ( req, res ) => {
 
 } );
 

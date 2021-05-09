@@ -3,8 +3,8 @@ require( 'dotenv' ).config();
 const express = require( 'express' );
 
 const userRouter = require( './routers/user' );
-const hospitalRouter = require( './routers/hospital' );
-const dopmamRouter = require( './routers/dopmam' );
+//const hospitalRouter = require( './routers/hospital' );
+//const dopmamRouter = require( './routers/dopmam' );
 
 const app = express();
 const port = process.env.PORT || 3000;

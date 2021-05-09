@@ -3,9 +3,7 @@ const jwt = require( 'jsonwebtoken' );
 
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { buildConnectionProfile } = require( '../fabric/ccp' );
-const { buildCAClient } = require( '../fabric/ca' );
-const { buildWallet } = require( '../fabric/wallet' );
+const { register } = require('../fabric/ca');
 
 const router = new express.Router();
 
@@ -64,17 +62,12 @@ router.post( '/user/refresh', ( req, res ) => {
 
 router.post( '/user/register', async ( req, res ) => {
     try {
-        const { name, organization } = req.user;
-        const connectionProfile = buildConnectionProfile( organization );
-        const caClient = buildCAClient( FabricCAServices, connectionProfile, organization );
-        const wallet = await buildWallet( Wallets, organization );
-
-        await enrollAdmin( caClient, wallet, organization, 'admin', 'adminpw' );
-        await registerAndEnrollUser( caClient, wallet, organization, name, 'admin', );
+        const { name, organization } = req.body;
+        await register(name, organization);
 
         res.status( 200 ).send();
     } catch ( error ) {
-        res.status( 400 ).send();
+        res.status( 400 ).send( error );
     }
 } );
 
