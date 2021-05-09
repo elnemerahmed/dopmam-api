@@ -22,7 +22,7 @@
 	},
 	"homepage": "https://github.com/elnemerahmed/dopmam-api#readme",
 	"dependencies": {
-		"chalks": "^0.1.5",
+		"chalk": "^4.1.1",
 		"express": "^4.17.1",
 		"fabric-ca-client": "^2.2.4",
 		"fabric-network": "^2.2.4",
