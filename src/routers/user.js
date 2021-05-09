@@ -3,13 +3,13 @@ const jwt = require( 'jsonwebtoken' );
 
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { register } = require('../fabric/ca');
+const { register, userExists } = require('../fabric/ca');
 
 const router = new express.Router();
 
 const generateToken = ( user ) => jwt.sign( user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' } );
 
-router.post( '/user/login', ( req, res ) => {
+router.post( '/user/login', async ( req, res ) => {
     try {
         const { name, organization } = req.body;
         const user = {
@@ -17,12 +17,16 @@ router.post( '/user/login', ( req, res ) => {
             organization
         };
 
+        const userResult = await userExists(name, organization);
+        if(!userResult) {
+            return res.status(400).send();
+        }
+
         /*
-            1. validate user in the org wallet
             2. get user roles from certificate
-            3. generate and save refresh token
-            4. generate temp token
-            5. return to the user
+            [Working] 3. generate and save refresh token
+            [Working] 4. generate temp token
+            [Working] 5. return to the user
         */
 
         const refreshToken = jwt.sign( user, process.env.REFRESH_TOKEN_SECRET );

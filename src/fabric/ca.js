@@ -84,4 +84,13 @@ module.exports.register = async (name, organization) => {
 
     await enrollAdmin( caClient, wallet, organization, 'admin', 'adminpw' );
     await registerAndEnrollUser( caClient, wallet, organization, name, 'admin', );
-}
+};
+
+module.exports.userExists = async (name, organization) => {
+    const connectionProfile = buildConnectionProfile( organization );
+    const caClient = buildCAClient( FabricCAServices, connectionProfile, organization );
+    const wallet = await buildWallet( Wallets, organization );
+
+    const user = await wallet.get( name );
+    return user; 
+};
