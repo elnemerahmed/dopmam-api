@@ -28,7 +28,7 @@ const enrollAdmin = async ( caClient, wallet, organization, admin, password ) =>
     }
 };
 
-const registerAndEnrollUser = async ( caClient, wallet, organization, user, department, admin ) => {
+const registerAndEnrollUser = async ( caClient, wallet, organization, user, department, roles, admin ) => {
     try {
         const userIdentity = await wallet.get( user );
         if ( userIdentity ) {
@@ -47,12 +47,20 @@ const registerAndEnrollUser = async ( caClient, wallet, organization, user, depa
         const secret = await caClient.register( {
             affiliation: `${organization}.${department}`,
             enrollmentID: user,
-            role: 'client'
+            role: 'client',
+            attrs: [
+                { 
+                    name: "roles", 
+                    value: JSON.stringify(roles), 
+                    ecert: true
+                }
+            ]
         }, adminUser );
 
         const enrollment = await caClient.enroll( {
             enrollmentID: user,
             enrollmentSecret: secret,
+            attr_reqs: [{ name: "roles", optional: false }]
         } );
 
         const x509Identity = {
@@ -78,13 +86,15 @@ const buildCAClient = ( FabricCAServices, connectionProfile, organization ) => {
     return caClient;
 };
 
-module.exports.register = async (name, organization, department) => {
+module.exports.buildCAClient = buildCAClient;
+
+module.exports.register = async (name, organization, department, roles) => {
     const connectionProfile = buildConnectionProfile( organization );
     const caClient = buildCAClient( FabricCAServices, connectionProfile, organization );
     const wallet = await buildWallet( Wallets, organization );
 
     await enrollAdmin( caClient, wallet, organization, 'admin', 'adminpw' );
-    await registerAndEnrollUser( caClient, wallet, organization, name, department, 'admin', );
+    await registerAndEnrollUser( caClient, wallet, organization, name, department, roles, 'admin' );
 };
 
 module.exports.userExists = async (name, organization) => {

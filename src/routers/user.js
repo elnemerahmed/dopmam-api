@@ -4,6 +4,7 @@ const jwt = require( 'jsonwebtoken' );
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
 const { register, userExists } = require('../fabric/ca');
+const { query } = require('../fabric/ledger');
 
 const router = new express.Router();
 
@@ -66,8 +67,8 @@ router.post( '/user/refresh', ( req, res ) => {
 
 router.post( '/user/register', async ( req, res ) => {
     try {
-        const { name, organization, department } = req.body;
-        await register(name, organization, department);
+        const { name, organization, department, roles } = req.body;
+        await register(name, organization, department, roles);
 
         res.status( 200 ).send();
     } catch ( error ) {
@@ -89,8 +90,10 @@ router.get( '/user/logout', ( req, res ) => {
     }
 } );
 
-router.get( '/test', authentication, ( req, res ) => {
-    res.status( 200 ).send( req.user );
+router.get( '/test', async ( req, res ) => {
+    const { user, organization } = req.body;
+    const result = await query(user, organization);
+    res.status( 200 ).send( result );
 } );
 
 module.exports = router;
