@@ -72,7 +72,6 @@ const buildCAClient = ( FabricCAServices, connectionProfile, organization ) => {
     const caInfo = connectionProfile.certificateAuthorities[ `ca.${ organization }.moh.ps` ];
     const caTLSCACerts = caInfo.tlsCACerts.pem;
     const caClient = new FabricCAServices( caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName );
-    console.log( chalk.green( `Built a CA Client named ${ caInfo.caName }` ) );
     return caClient;
 };
 
