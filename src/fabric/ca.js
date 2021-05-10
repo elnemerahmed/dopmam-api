@@ -99,11 +99,15 @@ module.exports.userExists = async (name, organization) => {
     return user; 
 };
 
-module.exports.userRoles = async (name, organization) => {
+module.exports.userRolesAndOU = async (name, organization) => {
     const wallet = await buildWallet( Wallets, organization );
     const user = await wallet.get( name );
     const { certificate } = user.credentials;
     const certificateObject = Certificate.fromPEM(certificate);
     const rolesJSON = JSON.parse(certificateObject.extensions[certificateObject.extensions.length - 1].value.toString()).attrs.roles;
-    return rolesJSON.split(",");
+    const department = certificateObject.subject.attributes[2].value;
+    return {
+        roles: rolesJSON.split(","),
+        department
+    }
 };

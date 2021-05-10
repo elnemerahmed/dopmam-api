@@ -19,12 +19,13 @@ router.post( '/user/login', async ( req, res ) => {
             return res.status(400).send();
         }
 
-        const roles = await userRoles(name, organization);
+        const { roles, department } = await userRoles(name, organization);
 
         const user = {
             name,
             organization,
-            roles
+            roles,
+            department
         };
 
         const refreshToken = jwt.sign( user, process.env.REFRESH_TOKEN_SECRET );
