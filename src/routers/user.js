@@ -3,7 +3,7 @@ const jwt = require( 'jsonwebtoken' );
 
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { register, userExists, userRolesAndOU } = require('../fabric/ca');
+const { register, userExists, userRolesAndOU, addNewAffiliation } = require('../fabric/ca');
 const { query } = require('../fabric/ledger');
 
 const router = new express.Router();
@@ -82,6 +82,16 @@ router.get( '/user/logout', ( req, res ) => {
             return token !== refreshToken;
         } );
         saveTokens( tokens );
+        res.status( 200 ).send();
+    } catch ( error ) {
+        res.status( 400 ).send();
+    }
+} );
+
+router.put( '/affiliations', async ( req, res ) => {
+    try {
+        const { organization, affiliation } = req.body;
+        await addNewAffiliation(organization, affiliation);
         res.status( 200 ).send();
     } catch ( error ) {
         res.status( 400 ).send();

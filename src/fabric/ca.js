@@ -111,3 +111,9 @@ module.exports.userRolesAndOU = async (name, organization) => {
         department
     }
 };
+
+module.exports.addNewAffiliation = async (organization, affiliation) => {
+    const wallet = await buildWallet( Wallets, organization );
+    const admin = await wallet.get( admin );
+    await caClient.newAffiliationService().create({ "name": affiliation }, admin);
+};
