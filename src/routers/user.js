@@ -3,7 +3,7 @@ const jwt = require( 'jsonwebtoken' );
 
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { register, userExists, userRoles } = require('../fabric/ca');
+const { register, userExists, userRolesAndOU } = require('../fabric/ca');
 const { query } = require('../fabric/ledger');
 
 const router = new express.Router();
@@ -19,7 +19,7 @@ router.post( '/user/login', async ( req, res ) => {
             return res.status(400).send();
         }
 
-        const { roles, department } = await userRoles(name, organization);
+        const { roles, department } = await userRolesAndOU(name, organization);
 
         const user = {
             name,
