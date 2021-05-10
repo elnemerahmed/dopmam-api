@@ -3,7 +3,7 @@ const jwt = require( 'jsonwebtoken' );
 
 const authentication = require( '../middleware/authentication' );
 const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { register, userExists } = require('../fabric/ca');
+const { register, userExists, userRoles } = require('../fabric/ca');
 const { query } = require('../fabric/ledger');
 
 const router = new express.Router();
@@ -13,22 +13,19 @@ const generateToken = ( user ) => jwt.sign( user, process.env.ACCESS_TOKEN_SECRE
 router.post( '/user/login', async ( req, res ) => {
     try {
         const { name, organization } = req.body;
-        const user = {
-            name,
-            organization
-        };
 
         const userResult = await userExists(name, organization);
         if(!userResult) {
             return res.status(400).send();
         }
 
-        /*
-            2. get user roles from certificate
-            [Working] 3. generate and save refresh token
-            [Working] 4. generate temp token
-            [Working] 5. return to the user
-        */
+        const roles = await userRoles(name, organization);
+
+        const user = {
+            name,
+            organization,
+            roles
+        };
 
         const refreshToken = jwt.sign( user, process.env.REFRESH_TOKEN_SECRET );
         let refreshTokens = loadTokens();
@@ -68,6 +65,7 @@ router.post( '/user/refresh', ( req, res ) => {
 router.post( '/user/register', async ( req, res ) => {
     try {
         const { name, organization, department, roles } = req.body;
+        roles = roles.join(",");
         await register(name, organization, department, roles);
 
         res.status( 200 ).send();
