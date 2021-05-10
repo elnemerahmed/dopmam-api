@@ -88,10 +88,4 @@ router.get( '/user/logout', ( req, res ) => {
     }
 } );
 
-router.get( '/test', async ( req, res ) => {
-    const { user, organization } = req.body;
-    const result = await query(user, organization);
-    res.status( 200 ).send( result );
-} );
-
 module.exports = router;
