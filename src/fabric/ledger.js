@@ -10,7 +10,7 @@ const { getChannels } = require('./channel');
         3. Sign Report
 */
 
-const connectionOptions = (name) => {
+const connectionOptions = (name, wallet) => {
     return {
         identity: name,
         wallet: wallet,
@@ -40,8 +40,8 @@ const instantiateConnection = async (organization) => {
 */
 const nextRecordId = async (name, organization) => {
     try {
-        const { connectionProfile, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name);
+        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
+        const options = connectionOptions(name, wallet);
         await gateway.connect( connectionProfile, options );
         const buffer = await contract.evaluateTransaction('getNextReportId');
         return parseFloat(buffer.toString());
@@ -52,8 +52,8 @@ const nextRecordId = async (name, organization) => {
 
 module.exports.getReportsInDepartment = async (name, organization, department) => {
     try {
-        const { connectionProfile, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name);
+        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
+        const options = connectionOptions(name, wallet);
         await gateway.connect( connectionProfile, options );
         const buffer = await contract.evaluateTransaction('getReportsInDepartment', department);
         return buffer.toString();
@@ -64,8 +64,8 @@ module.exports.getReportsInDepartment = async (name, organization, department) =
 
 module.exports.getReportsInHospital = async (name, organization) => {
     try {
-        const { connectionProfile, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name);
+        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
+        const options = connectionOptions(name, wallet);
         await gateway.connect( connectionProfile, options );
         const buffer = await contract.evaluateTransaction('getReportsInHospital');
         return buffer.toString();
@@ -76,8 +76,8 @@ module.exports.getReportsInHospital = async (name, organization) => {
 
 module.exports.getPatientDetails = async (name, organization, patientId) => {
     try {
-        const { connectionProfile, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name);
+        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
+        const options = connectionOptions(name, wallet);
         await gateway.connect( connectionProfile, options );
         const buffer = await contract.evaluateTransaction('getPatientDetails', patientId);
         return buffer.toString();
