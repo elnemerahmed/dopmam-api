@@ -1,4 +1,4 @@
-module.exports.getChannels = ( organization ) => {
+module.exports.getChannelsForOrganization = ( organization ) => {
     if ( organization === 'dopmam' ) {
         return [ 'dopmam-shifa', 'dopmam-naser' ];
     } else if ( organization === 'shifa' ) {

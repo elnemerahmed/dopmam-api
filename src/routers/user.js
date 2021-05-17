@@ -1,95 +1,43 @@
 const express = require( 'express' );
 const jwt = require( 'jsonwebtoken' );
 
-const authentication = require( '../middleware/authentication' );
-const { loadTokens, saveTokens } = require( '../jwt/helper' );
-const { register, userExists, userRolesAndOU, addNewAffiliation } = require('../fabric/ca');
-const { query } = require('../fabric/ledger');
+const authentication = require('../middleware/authentication');
+const { registerUser, userExists, getUserDetails, addNewAffiliation } = require('../fabric/ca');
 
 const router = new express.Router();
-
-const generateToken = ( user ) => jwt.sign( user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' } );
-
-router.post( '/user/login', async ( req, res ) => {
-    try {
-        const { name, organization } = req.body;
-
-        const userResult = await userExists(name, organization);
-        if(!userResult) {
-            return res.status(400).send();
-        }
-
-        const { roles, department } = await userRolesAndOU(name, organization);
-
-        const user = {
-            name,
-            organization,
-            roles,
-            department
-        };
-
-        const refreshToken = jwt.sign( user, process.env.REFRESH_TOKEN_SECRET );
-        let refreshTokens = loadTokens();
-        refreshTokens.push( refreshToken );
-        saveTokens( refreshTokens );
-
-        var token = generateToken( user );
-
-        res.status( 201 ).send( { refreshToken, token } );
-    } catch ( error ) {
-        res.status( 400 ).send();
-    }
-} );
-
-router.post( '/user/refresh', ( req, res ) => {
-    try {
-        const { token: refreshToken } = req.body;
-        let tokens = loadTokens();
-        if ( !tokens.includes( refreshToken ) ) {
-            return res.status( 400 ).send();
-        }
-        jwt.verify( refreshToken, process.env.REFRESH_TOKEN_SECRET, ( error, user ) => {
-            if ( error ) {
-                return res.status( 400 ).send();
-            }
-
-            delete user.iat;
-            delete user.exp;
-            const token = generateToken( user );
-            res.status( 201 ).send( { token } );
-        } );
-    } catch ( error ) {
-        res.status( 400 ).send();
-    }
-} );
 
 router.post( '/user/register', async ( req, res ) => {
     try {
         const { name, organization, department, roles } = req.body;
-        await register(name, organization, department, roles.join(","));
-
+        await registerUser(name, organization, department, roles.join(","));
         res.status( 200 ).send();
     } catch ( error ) {
         res.status( 400 ).send( error );
     }
 } );
 
-router.get( '/user/logout', ( req, res ) => {
+router.post( '/user/login', async ( req, res ) => {
     try {
-        const { token } = req.body;
-        let tokens = loadTokens();
-        tokens = tokens.filter( ( refreshToken ) => {
-            return token !== refreshToken;
-        } );
-        saveTokens( tokens );
-        res.status( 200 ).send();
+        const { name, organization } = req.body;
+        let userFound = await userExists(name, organization);
+        if(!userFound) {
+            return res.status(404).send();
+        }
+        const { roles, department } = await getUserDetails(name, organization);
+        const userObject = { name, organization, roles, department };
+        const token = jwt.sign( userObject, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' } );
+        res.status( 201 ).send( { token } );
     } catch ( error ) {
         res.status( 400 ).send();
     }
 } );
 
-router.put( '/affiliations', async ( req, res ) => {
+router.put( '/affiliations', authentication, async ( req, res ) => {
     try {
+        const { roles } = req.user;
+        if(!hasRole('ca-affiliations', roles)) {
+            res.status( 401 ).send();
+        }
         const { organization, affiliation } = req.body;
         await addNewAffiliation(organization, affiliation);
         res.status( 200 ).send();
