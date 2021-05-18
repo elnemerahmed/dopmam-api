@@ -84,11 +84,11 @@ const registerUser = async (name, organization, department, roles) => {
     const caClient = buildCAClient( FabricCAServices, connectionProfile, organization );
     const wallet = await buildWallet( Wallets, organization );
     let result = await enrollAdmin( caClient, wallet, organization, 'admin', 'adminpw' );
-    if(result.code !=- 200) {
+    if(result.code != 200 && result.code != 409) {
         return result;
     }
     result = await registerAndEnrollUser( caClient, wallet, organization, name, department, roles, 'admin' );
-    if(result.code !=- 200) {
+    if(result.code != 200) {
         return result;
     }
     return { code: 200 };             
@@ -112,23 +112,14 @@ const getUserDetails = async (name, organization) => {
         const rolesJSON = JSON.parse(certificateObject.extensions[certificateObject.extensions.length - 1].value.toString()).attrs.roles;
         const department = certificateObject.subject.attributes[2].value;
 
-        return { code: 200, 
+        return { 
+            code: 200, 
             payload: 
-                { roles: rolesJSON.split(","), 
-                department 
-            }  
-        };
-    } catch (error) {
-        return { error, code: 400 };
-    }
-};
-
-const addNewAffiliation = async (organization, affiliation) => {
-    try {
-        const wallet = await buildWallet( Wallets, organization );
-        const admin = await wallet.get( admin );
-        await caClient.newAffiliationService().create({ "name": affiliation }, admin);
-        return { code: 200 };
+                { 
+                    roles: rolesJSON.slice(1, -1).split(','),
+                    department 
+                }  
+            };
     } catch (error) {
         return { error, code: 400 };
     }
@@ -138,6 +129,5 @@ module.exports = {
     buildCAClient,
     registerUser,
     userExists,
-    getUserDetails,
-    addNewAffiliation
+    getUserDetails
 };

@@ -1,17 +1,14 @@
 const { Gateway, Wallets } = require( 'fabric-network' );
 const { buildConnectionProfile } = require( '../fabric/ccp' );
 const { buildWallet } = require( '../fabric/wallet' );
-const { getChannels } = require('./channel');
+const { getChannelsForOrganization } = require('./channel');
 
-/*
-    TODO:
-        1. Submit Patient Info
-        2. Submit Report
-        3. Sign Report
-*/
-
-const connectionOptions = (name, wallet) => {
-    return {
+module.exports.createPatient = async (name, organization, nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate) => {
+    const channel = getChannelsForOrganization( organization )[0];
+    const connectionProfile = buildConnectionProfile( organization );
+    const wallet = await buildWallet( Wallets, organization );
+    const gateway = new Gateway();
+    const connectionOptions = {
         identity: name,
         wallet: wallet,
         gatewayDiscovery: {
@@ -19,69 +16,9 @@ const connectionOptions = (name, wallet) => {
             asLocalhost: true
         }
     };
-};
- 
-const instantiateConnection = async (organization) => {
-    const channels = getChannels( organization );
-    const connectionProfile = buildConnectionProfile( organization );
-    const wallet = await buildWallet( Wallets, organization );
-    const gateway = new Gateway();
-    return {
-        channels,
-        connectionProfile,
-        wallet,
-        gateway
-    };
-};
-
-/*
-    This is private method
-    Use it only when creating reports
-*/
-const nextRecordId = async (name, organization) => {
-    try {
-        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name, wallet);
-        await gateway.connect( connectionProfile, options );
-        const buffer = await contract.evaluateTransaction('getNextReportId');
-        return parseFloat(buffer.toString());
-    } catch (error) {
-        return undefined;
-    }
-};
-
-module.exports.getReportsInDepartment = async (name, organization, department) => {
-    try {
-        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name, wallet);
-        await gateway.connect( connectionProfile, options );
-        const buffer = await contract.evaluateTransaction('getReportsInDepartment', department);
-        return buffer.toString();
-    } catch (error) {
-        return undefined;
-    }
-};
-
-module.exports.getReportsInHospital = async (name, organization) => {
-    try {
-        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name, wallet);
-        await gateway.connect( connectionProfile, options );
-        const buffer = await contract.evaluateTransaction('getReportsInHospital');
-        return buffer.toString();
-    } catch (error) {
-        return undefined;
-    }
-};
-
-module.exports.getPatientDetails = async (name, organization, patientId) => {
-    try {
-        const { connectionProfile, wallet, gateway } = await instantiateConnection(organization);
-        const options = connectionOptions(name, wallet);
-        await gateway.connect( connectionProfile, options );
-        const buffer = await contract.evaluateTransaction('getPatientDetails', patientId);
-        return buffer.toString();
-    } catch (error) {
-        return undefined;
-    }
+    await gateway.connect( connectionProfile, connectionOptions );
+    const network = await gateway.getNetwork( channel );
+    const contract = network.getContract( process.env.CHAINCODE );
+    const buffer = await contract.submitTransaction('createPatient', nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate);
+    return buffer.toString();
 };
