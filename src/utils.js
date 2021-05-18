@@ -10,7 +10,6 @@ const authorizedOR = (user, roles) => {
     return result;
 };
 
-
 module.exports = {
     authorizedAND,
     authorizedOR
