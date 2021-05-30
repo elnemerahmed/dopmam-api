@@ -46,18 +46,21 @@ const createReport = async (name, organization, reportId, patientNationalId, rep
     return buffer.toString();
 };
 
-/*
-    TODO: Smart Contract
-*/
 const signReport = async (name, organization, reportId) => {
     const contract = initializeConnectionForOrgranization(name, organization);
     const buffer = await contract.submitTransaction('signReport', reportId);
     return buffer.toString();
 };
 
-const getRports= async (name, organization) => {
+const getReport = async (name, organization, reportId) => {
     const contract = initializeConnectionForOrgranization(name, organization);
-    const buffer = await contract.evaluateTransaction('getRportsInHospital');
+    const buffer = await contract.evaluateTransaction('getReport', reportId);
+    return buffer.toString();
+};
+
+const getReports = async (name, organization) => {
+    const contract = initializeConnectionForOrgranization(name, organization);
+    const buffer = await contract.evaluateTransaction('getReports');
     return buffer.toString();
 };
 
@@ -67,5 +70,6 @@ module.exports = {
     deletePatient,
     createReport,
     signReport,
-    getRports
+    getReport,
+    getReports
 };
