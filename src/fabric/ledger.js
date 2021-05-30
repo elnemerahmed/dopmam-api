@@ -40,9 +40,9 @@ const getPatient = async (name, organization, nationalId) => {
     return buffer.toString();
 };
 
-const createReport = async (name, organization, reportId, patientNationalId, reportDate, summary, diagnosis, procedure) => {
+const createReport = async (name, organization, patientNationalId, reportDate, summary, diagnosis, procedure) => {
     const contract = initializeConnectionForOrgranization(name, organization);
-    const buffer = await contract.submitTransaction('createReport', reportId, patientNationalId, reportDate, summary, diagnosis, procedure);
+    const buffer = await contract.submitTransaction('createReport', patientNationalId, reportDate, summary, diagnosis, procedure);
     return buffer.toString();
 };
 
