@@ -1,14 +1,14 @@
 const express = require( 'express' );
 
 const authentication = require( '../middleware/authentication' );
-const { createPatient, getPatient, deletePatient, createReport, signReport, getRports } = require( './../fabric/ledger' );
+const { createPatient, getPatient, deletePatient, createReport, signReport, getReports, getReport } = require( './../fabric/ledger' );
 const { authorizedAND, authorizedOR } = require('../utils');
 
 const router = new express.Router();
 
 router.get( '/patient', authentication, async ( req, res ) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
         const { user } = req;
         const { name, organization } = user;
         
@@ -46,13 +46,13 @@ router.delete( '/patient', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { nationalId } = req.body;
+        const { id } = req.body;
  
         if(!authorizedAND(user, ["doctor"])) {
             throw new Error();
         }
 
-        const result = await deletePatient(name, organization, nationalId);
+        const result = await deletePatient(name, organization, id);
 
         res.status( 200 ).send(result);
     } catch ( error ) {
@@ -82,14 +82,31 @@ router.post( '/report/sign', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { reportId } = req.body;
+        const { id, country, city, hospital, dept, date, coverage } = req.body;
  
         if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
             throw new Error();
         }
 
-        const result = await signReport(name, organization, reportId);
+        const result = await signReport(name, organization, id, country, city, hospital, dept, date, coverage);
 
+        res.status( 200 ).send(result);
+    } catch ( error ) {
+        res.status( 500 ).send(error);
+    }
+} );
+
+router.get( '/report', authentication, async ( req, res ) => {
+    try {
+        const { user } = req;
+        const { name, organization } = user;
+        const { id } = req.body;
+ 
+        if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
+            throw new Error();
+        }
+
+        const result = await getReport(name, organization, id);
         res.status( 200 ).send(result);
     } catch ( error ) {
         res.status( 500 ).send(error);
@@ -100,13 +117,12 @@ router.get( '/reports', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { reportId } = req.body;
  
         if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
             throw new Error();
         }
 
-        const result = await getRports(name, organization);
+        const result = await getReports(name, organization);
         res.status( 200 ).send(result);
     } catch ( error ) {
         res.status( 500 ).send(error);

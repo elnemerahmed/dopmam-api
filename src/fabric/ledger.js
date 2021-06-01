@@ -30,7 +30,7 @@ const createPatient = async (name, organization, nationalId, firstName, lastName
 
 const deletePatient = async (name, organization, nationalId) => {
     const contract = await initializeConnectionForOrgranization(name, organization);
-    const buffer = await contract.evaluateTransaction('deletePatient', nationalId);
+    const buffer = await contract.submitTransaction('deletePatient', nationalId);
     return buffer.toString();
 };
 
@@ -40,15 +40,15 @@ const getPatient = async (name, organization, nationalId) => {
     return buffer.toString();
 };
 
-const createReport = async (name, organization, reportId, patientNationalId, reportDate, summary, diagnosis, procedure) => {
+const createReport = async (name, organization, patientNationalId, reportDate, summary, diagnosis, procedure) => {
     const contract = await initializeConnectionForOrgranization(name, organization);
-    const buffer = await contract.submitTransaction('createReport', reportId, patientNationalId, reportDate, summary, diagnosis, procedure);
+    const buffer = await contract.submitTransaction('createReport', patientNationalId, reportDate, summary, diagnosis, procedure);
     return buffer.toString();
 };
 
-const signReport = async (name, organization, reportId) => {
+const signReport = async (name, organization, reportId, country, city, hospital, dept, date, coverage) => {
     const contract = await initializeConnectionForOrgranization(name, organization);
-    const buffer = await contract.submitTransaction('signReport', reportId);
+    const buffer = await contract.submitTransaction('signReport', reportId, country, city, hospital, dept, date, coverage);
     return buffer.toString();
 };
 
