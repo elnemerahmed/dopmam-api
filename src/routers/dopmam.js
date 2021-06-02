@@ -21,7 +21,7 @@ router.post( '/dopmam/report/sign', authentication, async ( req, res ) => {
 
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -38,7 +38,7 @@ router.get( '/dopmam/report', authentication, async ( req, res ) => {
         const result = await getReport(name, organization, id);
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 

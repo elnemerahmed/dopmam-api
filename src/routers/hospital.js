@@ -38,7 +38,7 @@ router.post( '/patient', authentication, async ( req, res ) => {
 
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -56,7 +56,7 @@ router.delete( '/patient', authentication, async ( req, res ) => {
 
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -74,7 +74,7 @@ router.post( '/report/new', authentication, async ( req, res ) => {
 
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -82,17 +82,17 @@ router.post( '/report/sign', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { id, country, city, hospital, dept, date, coverage } = req.body;
+        const { id } = req.body;
  
         if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
             throw new Error();
         }
 
-        const result = await signReport(name, organization, id, country, city, hospital, dept, date, coverage);
+        const result = await signReport(name, organization, id, "", "", "", "", 0, 0);
 
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -109,7 +109,7 @@ router.get( '/report', authentication, async ( req, res ) => {
         const result = await getReport(name, organization, id);
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
@@ -125,7 +125,7 @@ router.get( '/reports', authentication, async ( req, res ) => {
         const result = await getReports(name, organization);
         res.status( 200 ).send(result);
     } catch ( error ) {
-        res.status( 500 ).send(error);
+        res.status( 401 ).send();
     }
 } );
 
