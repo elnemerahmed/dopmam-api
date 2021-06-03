@@ -11,13 +11,13 @@ router.post( '/dopmam/report/sign', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { id, country, city, hospital, dept, date, coverage } = req.body;
+        const { id, country, city, hospital, dept, date } = req.body;
  
         if(!authorizedOR(user, ["dopmam_medical_lead", "dopmam_medical", "dopmam_financial_lead", "dopmam_financial"])) {
             throw new Error();
         }
 
-        const result = await signReport(name, organization, id, country, city, hospital, dept, date, coverage);
+        const result = await signReport(name, organization, id, country, city, hospital, dept, date, 0);
 
         res.status( 200 ).send(result);
     } catch ( error ) {

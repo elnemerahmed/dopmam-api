@@ -118,7 +118,7 @@ router.get( '/reports', authentication, async ( req, res ) => {
         const { user } = req;
         const { name, organization } = user;
  
-        if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
+        if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager", "dopmam_medical_lead", "dopmam_medical", "dopmam_financial_lead", "dopmam_financial"])) {
             throw new Error();
         }
 
