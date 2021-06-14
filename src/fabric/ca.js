@@ -2,7 +2,7 @@ const { buildConnectionProfile } = require( '../fabric/ccp' );
 const { buildWallet } = require( '../fabric/wallet' );
 const FabricCAServices = require( 'fabric-ca-client' );
 const { Wallets } = require( 'fabric-network' );
-const { Certificate } = require('@fidm/x509')
+const { Certificate } = require('@fidm/x509');
 
 const enrollAdmin = async ( caClient, wallet, organization, admin, password ) => {
     try {

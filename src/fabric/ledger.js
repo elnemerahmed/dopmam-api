@@ -3,8 +3,7 @@ const { buildConnectionProfile } = require( '../fabric/ccp' );
 const { buildWallet } = require( '../fabric/wallet' );
 const { getChannelsForOrganization } = require('./channel');
 
-const initializeConnectionForOrgranization = async (name, organization) => {
-    const channel = getChannelsForOrganization( organization )[0];
+const initializeConnectionForOrgranization = async (name, organization, channel) => {
     const connectionProfile = buildConnectionProfile( organization );
     const wallet = await buildWallet( Wallets, organization );
     const gateway = new Gateway();
@@ -22,44 +21,50 @@ const initializeConnectionForOrgranization = async (name, organization) => {
     return contract;
 };
 
-const createPatient = async (name, organization, nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const createPatient = async (name, organization, nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.submitTransaction('createPatient', nationalId, firstName, lastName, gender, dateOfBirth, insuranceNumber, insuranceDueDate);
     return buffer.toString();
 };
 
-const deletePatient = async (name, organization, nationalId) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const deletePatient = async (name, organization, nationalId, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.submitTransaction('deletePatient', nationalId);
     return buffer.toString();
 };
 
-const getPatient = async (name, organization, nationalId) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const getPatient = async (name, organization, nationalId, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.evaluateTransaction('getPatient', nationalId);
     return buffer.toString();
 };
 
-const createReport = async (name, organization, patientNationalId, reportDate, summary, diagnosis, procedure) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const createReport = async (name, organization, patientNationalId, reportDate, summary, diagnosis, procedure, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.submitTransaction('createReport', patientNationalId, reportDate, summary, diagnosis, procedure);
     return buffer.toString();
 };
 
-const signReport = async (name, organization, reportId, country, city, hospital, dept, date, coverage) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const signReport = async (name, organization, reportId, country, city, hospital, dept, date, coverage, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.submitTransaction('signReport', reportId, country, city, hospital, dept, date, coverage);
     return buffer.toString();
 };
 
-const getReport = async (name, organization, reportId) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const rejectReport = async (name, organization, reportId, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
+    const buffer = await contract.submitTransaction('rejectReport', reportId);
+    return buffer.toString();
+};
+
+const getReport = async (name, organization, reportId, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.evaluateTransaction('getReport', reportId);
     return buffer.toString();
 };
 
-const getReports = async (name, organization) => {
-    const contract = await initializeConnectionForOrgranization(name, organization);
+const getReports = async (name, organization, channel = getChannelsForOrganization( organization )[0]) => {
+    const contract = await initializeConnectionForOrgranization(name, organization, channel);
     const buffer = await contract.evaluateTransaction('getReports');
     return buffer.toString();
 };
@@ -70,6 +75,7 @@ module.exports = {
     deletePatient,
     createReport,
     signReport,
+    rejectReport,
     getReport,
     getReports
 };
