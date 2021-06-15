@@ -1,7 +1,7 @@
 const express = require( 'express' );
 
 const authentication = require( '../middleware/authentication' );
-const { createPatient, getPatient, deletePatient, createReport, signReport, rejectReport, getReport } = require( './../fabric/ledger' );
+const { createPatient, getPatient, deletePatient, createReport, signReport, rejectReport, getReport, getReports } = require( './../fabric/ledger' );
 const { authorizedAND, authorizedOR } = require('../utils');
 
 const router = new express.Router();
@@ -125,6 +125,22 @@ router.post( '/report', authentication, async ( req, res ) => {
         }
 
         const result = await getReport(name, organization, id);
+        res.status( 200 ).send(result);
+    } catch ( error ) {
+        res.status( 404 ).send();
+    }
+} );
+
+router.post( '/reports', authentication, async ( req, res ) => {
+    try {
+        const { user } = req;
+        const { name, organization } = user;
+ 
+        if(!authorizedOR(user, ["doctor", "head_department", "hospital_manager"])) {
+            res.status( 401 ).send();
+        }
+
+        const result = await getReports(name, organization);
         res.status( 200 ).send(result);
     } catch ( error ) {
         res.status( 404 ).send();
