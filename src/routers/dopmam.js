@@ -2,7 +2,7 @@ const express = require( 'express' );
 
 const authentication = require( '../middleware/authentication' );
 const { authorizedAND, authorizedOR } = require('../utils');
-const { signReport, getReport, rejectReport, getPatient } = require( './../fabric/ledger' );
+const { signReport, getReport, getReports, rejectReport, getPatient } = require( './../fabric/ledger' );
 
 
 const router = new express.Router();
