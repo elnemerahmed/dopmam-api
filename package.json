@@ -26,7 +26,8 @@
 		"fabric-ca-client": "^2.2.4",
 		"fabric-network": "^2.2.4",
 		"jsonwebtoken": "^8.5.1",
-		"@fidm/x509": "^1.2.1"
+		"@fidm/x509": "^1.2.1",
+		"cors": "^2.8.5"
 	},
 	"devDependencies": {
 		"dotenv": "^9.0.0"
