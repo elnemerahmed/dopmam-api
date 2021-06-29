@@ -39,9 +39,9 @@ const getPatient = async (name, organization, nationalId, channel = getChannelsF
     return buffer.toString();
 };
 
-const createReport = async (name, organization, patientNationalId, reportDate, summary, diagnosis, procedure, channel = getChannelsForOrganization( organization )[0]) => {
+const createReport = async (name, organization, patientNationalId, reportDate, medicalHistoryAndClinicalFindings, diagnosis, recommendation, channel = getChannelsForOrganization( organization )[0]) => {
     const contract = await initializeConnectionForOrgranization(name, organization, channel);
-    const buffer = await contract.submitTransaction('createReport', patientNationalId, reportDate, summary, diagnosis, procedure);
+    const buffer = await contract.submitTransaction('createReport', patientNationalId, reportDate, medicalHistoryAndClinicalFindings, diagnosis, recommendation);
     return buffer.toString();
 };
 

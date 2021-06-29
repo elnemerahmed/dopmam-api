@@ -64,13 +64,13 @@ router.post( '/report/new', authentication, async ( req, res ) => {
     try {
         const { user } = req;
         const { name, organization } = user;
-        const { patientNationalId, reportDate, summary, diagnosis, procedure } = req.body;
+        const { patientNationalId, reportDate, medicalHistoryAndClinicalFindings, diagnosis, recommendation } = req.body;
  
         if(!authorizedAND(user, ["doctor"])) {
             res.status( 401 ).send();
         }
 
-        const result = await createReport(name, organization, patientNationalId, reportDate, summary, diagnosis, procedure);
+        const result = await createReport(name, organization, patientNationalId, reportDate, medicalHistoryAndClinicalFindings, diagnosis, recommendation);
 
         res.status( 200 ).send(result);
     } catch ( error ) {
