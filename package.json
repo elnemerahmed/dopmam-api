@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"dev": "nodemon src/index.js",
-		"start": "nodemon src/index.js"
+		"start": "node src/index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -22,12 +22,12 @@
 	},
 	"homepage": "https://github.com/elnemerahmed/dopmam-api#readme",
 	"dependencies": {
+		"@fidm/x509": "^1.2.1",
+		"cors": "^2.8.5",
 		"express": "^4.17.1",
 		"fabric-ca-client": "^2.2.4",
 		"fabric-network": "^2.2.4",
-		"jsonwebtoken": "^8.5.1",
-		"@fidm/x509": "^1.2.1",
-		"cors": "^2.8.5"
+		"jsonwebtoken": "^8.5.1"
 	},
 	"devDependencies": {
 		"dotenv": "^9.0.0"
