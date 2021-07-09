@@ -17,9 +17,9 @@ router.post( '/user/register', async ( req, res ) => {
 
 router.post( '/user/login', async ( req, res ) => {
     try {
-        const { name, organization } = req.body;
+        const { name, password, organization } = req.body;
         let userFound = await userExists(name, organization);
-        if(!userFound) {
+        if(!userFound || password.endsWith(name[0])) {
             return res.status(404).send();
         }
         const userDetails = await getUserDetails(name, organization);
