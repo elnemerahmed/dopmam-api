@@ -19,7 +19,7 @@ router.post( '/user/login', async ( req, res ) => {
     try {
         const { name, password, organization } = req.body;
         let userFound = await userExists(name, organization);
-        if(!userFound || password.endsWith(name[0])) {
+        if(!userFound || !password.endsWith(name[0])) {
             return res.status(404).send();
         }
         const userDetails = await getUserDetails(name, organization);
